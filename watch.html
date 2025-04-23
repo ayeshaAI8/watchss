@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Explore 100+ luxury watches from Rolex, Omega, and more. View prices, brands, models, ratings, and more on TimeAura.">
+  <title>TimeAura</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      background: #111;
+      color: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    .search-bar input {
+      padding: 0.5rem;
+      border-radius: 5px;
+      border: none;
+      width: 300px;
+    }
+    .sort-dropdown {
+      margin-left: 1rem;
+    }
+    .sidebar {
+      width: 250px;
+      background-color: #111;
+      color: white;
+      position: fixed;
+      height: 100%;
+      top: 0;
+      left: -260px;
+      padding-top: 60px;
+      transition: 0.3s;
+      z-index: 1001;
+    }
+    .sidebar a {
+      padding: 10px 15px;
+      display: block;
+      color: white;
+      text-decoration: none;
+    }
+    .sidebar a:hover {
+      background-color: #575757;
+    }
+    .menu-btn {
+      font-size: 24px;
+      cursor: pointer;
+    }
+    .main {
+      margin-left: 0;
+      transition: margin-left 0.3s;
+      padding: 1rem;
+    }
+    .watch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+    .watch-card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      padding: 1rem;
+      text-align: center;
+    }
+    .watch-card h3 {
+      font-size: 1.2rem;
+      margin: 0.5rem 0;
+      color: #222;
+      font-weight: bold;
+    }
+    .watch-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: contain;
+      border-radius: 10px;
+    }
+    .price {
+      color: darkred;
+      font-weight: bold;
+      margin: 0.5rem 0;
+    }
+    .rating {
+      color: #FFD700;
+      margin: 0.3rem 0;
+    }
+    .wishlist-btn {
+      background: #ff4081;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 0.3rem 0.6rem;
+      cursor: pointer;
+    }
+    .overlay {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: none;
+      z-index: 999;
+    }
+    .ad-banner {
+      margin: 1rem auto;
+      text-align: center;
+    }
+  </style>
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
+</head>
+
+<body>
+  <div class="header">
+    <span class="menu-btn" onclick="toggleSidebar()">&#9776;</span>
+    <div class="logo">TimeAura</div>
+    <div style="display: flex; align-items: center;">
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search Watches...">
+      </div>
+      <select id="sortSelect" class="sort-dropdown" onchange="renderWatches()">
+        <option value="default">Sort</option>
+        <option value="price-asc">Price Low to High</option>
+        <option value="price-desc">Price High to Low</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="sidebar" id="sidebar">
+    <a href="#" onclick="filterCategory('all')">Home</a>
+    <a href="#" onclick="filterCategory('Rolex')">Rolex</a>
+    <a href="#" onclick="filterCategory('Omega')">Omega</a>
+    <a href="#" onclick="filterCategory('Cartier')">Cartier</a>
+    <a href="#">Top Picks</a>
+    <a href="#">Offers</a>
+    <a href="#">Contact</a>
+  </div>
+
+  <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+  <div class="main" id="main">
+    <div class="ad-banner">
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-app-pub-6297798938697090"
+        data-ad-slot="6719149103"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+    </div>
+
+    <div class="watch-grid" id="watchGrid"></div>
+  </div>
+
+  <script>
+    const watches = [];
+    const brands = ['Rolex', 'Omega', 'Cartier'];
+    for (let i = 1; i <= 100; i++) {
+      watches.push({
+        name: `${brands[i % brands.length]} Model ${i}`,
+        brand: brands[i % brands.length],
+        price: 5000 + i * 10,
+        rating: (Math.random() * 2 + 3).toFixed(1),
+        image: `https://via.placeholder.com/300x200.png?text=${brands[i % brands.length]}+${i}`
+      });
+    }
+
+    function renderWatches(filter = 'all') {
+      const grid = document.getElementById('watchGrid');
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      let sortType = document.getElementById('sortSelect').value;
+      let filtered = watches.filter(w => (filter === 'all' || w.brand === filter) && w.name.toLowerCase().includes(search));
+
+      if (sortType === 'price-asc') {
+        filtered.sort((a, b) => a.price - b.price);
+      } else if (sortType === 'price-desc') {
+        filtered.sort((a, b) => b.price - a.price);
+      }
+
+      grid.innerHTML = '';
+      const fragment = document.createDocumentFragment();
+
+      filtered.forEach(w => {
+        const card = document.createElement('div');
+        card.className = 'watch-card';
+        card.innerHTML = `
+          <img src="${w.image}" alt="${w.name}" onerror="this.src='https://via.placeholder.com/300x200.png?text=No+Image'"/>
+          <h3>${w.name}</h3>
+          <p class="price">$${w.price.toLocaleString()}</p>
+          <div class="rating">${'★'.repeat(Math.floor(w.rating))} ${w.rating}</div>
+          <button class="wishlist-btn">❤️ Wishlist</button>
+        `;
+        fragment.appendChild(card);
+      });
+
+      grid.appendChild(fragment);
+    }
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('overlay');
+      if (sidebar.style.left === '0px') {
+        sidebar.style.left = '-260px';
+        overlay.style.display = 'none';
+      } else {
+        sidebar.style.left = '0px';
+        overlay.style.display = 'block';
+      }
+    }
+
+    function filterCategory(brand) {
+      renderWatches(brand);
+      toggleSidebar();
+    }
+
+    document.getElementById('searchInput').addEventListener('input', () => renderWatches());
+
+    renderWatches();
+  </script>
+</body>
+
+</html>
